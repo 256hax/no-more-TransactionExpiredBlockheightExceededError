@@ -27,31 +27,40 @@ export const main = async () => {
   const connection = new Connection(endpoint, 'confirmed');
 
   const adminSecretKeyBase58 = process.env.PAYER_SECRET_KEY;
-  if (!adminSecretKeyBase58) throw new Error('adminSecretKeyBase58 not found.')
+  if (!adminSecretKeyBase58) throw new Error('adminSecretKeyBase58 not found.');
   const payer = Keypair.fromSecretKey(bs58.decode(adminSecretKeyBase58));
 
   // ------------------------------------------
   //  Taker
   // ------------------------------------------
-  const takerPublicKey = new PublicKey('CJsPSQtV28CJiRt8XThuG5Ei1cX2fH5GcPoZYyM26gzm');
+  const takerPublicKey = new PublicKey(
+    'CJsPSQtV28CJiRt8XThuG5Ei1cX2fH5GcPoZYyM26gzm'
+  );
 
   // ------------------------------------------
   //  Transfer
   // ------------------------------------------
-  // Create Simple Transaction
   let transaction = new Transaction();
 
-  // Add an instruction to execute
-  transaction.add(SystemProgram.transfer({
-    fromPubkey: payer.publicKey,
-    toPubkey: takerPublicKey,
-    lamports: LAMPORTS_PER_SOL *  0.00001,
-  }));
+  transaction.add(
+    SystemProgram.transfer({
+      fromPubkey: payer.publicKey,
+      toPubkey: takerPublicKey,
+      lamports: LAMPORTS_PER_SOL * 0.00001,
+    })
+  );
 
   const signature = await sendAndConfirmTransaction(
     connection,
     transaction,
-    [payer]
+    [payer],
+    // https://solana-labs.github.io/solana-web3.js/types/ConfirmOptions.html
+    {
+      commitment: 'confirmed',
+      maxRetries: 3,
+      preflightCommitment: 'confirmed',
+      skipPreflight: true,
+    }
   );
   console.log('signature =>', signature);
 };
