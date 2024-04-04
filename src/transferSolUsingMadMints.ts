@@ -10,6 +10,7 @@ import {
   SystemProgram,
   Transaction,
   LAMPORTS_PER_SOL,
+  sendAndConfirmTransaction,
 } from '@solana/web3.js';
 
 // Mad Mints
@@ -30,6 +31,38 @@ const main = async () => {
   if (!adminSecretKeyBase58) throw new Error('adminSecretKeyBase58 not found.');
   const payer = Keypair.fromSecretKey(bs58.decode(adminSecretKeyBase58));
 
+  // Taker
+  const takerPublicKey = new PublicKey(
+    'CJsPSQtV28CJiRt8XThuG5Ei1cX2fH5GcPoZYyM26gzm'
+  );
+
+  // ---------------------------------------------------
+  //  Airdrop
+  // ---------------------------------------------------
+  // // Payer
+  // let latestBlockhash = await connection.getLatestBlockhash();
+  // let airdropSignature = await connection.requestAirdrop(
+  //   payer.publicKey,
+  //   LAMPORTS_PER_SOL
+  // );
+  // await connection.confirmTransaction({
+  //   blockhash: latestBlockhash.blockhash,
+  //   lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+  //   signature: airdropSignature,
+  // });
+
+  // // Taker
+  // latestBlockhash = await connection.getLatestBlockhash();
+  // airdropSignature = await connection.requestAirdrop(
+  //   takerPublicKey,
+  //   LAMPORTS_PER_SOL
+  // );
+  // await connection.confirmTransaction({
+  //   blockhash: latestBlockhash.blockhash,
+  //   lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
+  //   signature: airdropSignature,
+  // });
+
   // ------------------------------------
   //  Create Nonce Account
   // ------------------------------------
@@ -42,7 +75,6 @@ const main = async () => {
   );
 
   if (!nonceAccount) throw Error('Nonce Account not found.');
-  console.log();
 
   // ------------------------------------
   //  Get Nonce
@@ -51,13 +83,6 @@ const main = async () => {
 
   if (!nonceAccountInfo) throw Error('Nonce Account not found.');
   const nonce = nonceAccountInfo.nonce;
-
-  // ------------------------------------------
-  //  Taker
-  // ------------------------------------------
-  const takerPublicKey = new PublicKey(
-    'CJsPSQtV28CJiRt8XThuG5Ei1cX2fH5GcPoZYyM26gzm'
-  );
 
   // ------------------------------------
   //  Create Instruction
@@ -76,7 +101,6 @@ const main = async () => {
     toPubkey: takerPublicKey,
     lamports: LAMPORTS_PER_SOL * 0.00001,
   });
-
   tx.add(instructions);
 
   // assign `nonce` as recentBlockhash.
@@ -87,9 +111,12 @@ const main = async () => {
   //  Sign and Send Transaction
   // ------------------------------------
   tx.sign(payer, nonceAccountAuth);
-  const signature = await connection.sendRawTransaction(tx.serialize());
+  const signatureSendRawTransaction = await connection.sendRawTransaction(
+    tx.serialize()
+  );
 
-  console.log('signature =>', signature);
+  console.log('nonceAccount =>', nonceAccount);
+  console.log('signatureSendRawTransaction =>', signatureSendRawTransaction);
 };
 
 main();
