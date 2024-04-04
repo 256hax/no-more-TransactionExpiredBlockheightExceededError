@@ -7,14 +7,11 @@ import {
   Connection,
   Keypair,
   PublicKey,
-  clusterApiUrl,
   LAMPORTS_PER_SOL,
   Transaction,
   SystemProgram,
   sendAndConfirmTransaction,
 } from '@solana/web3.js';
-import nacl from 'tweetnacl';
-import { publicKey } from '@metaplex-foundation/umi';
 
 export const main = async () => {
   // ----------------------------------------------------
