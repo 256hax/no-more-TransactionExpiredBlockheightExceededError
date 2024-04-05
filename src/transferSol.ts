@@ -11,6 +11,7 @@ import {
   Transaction,
   SystemProgram,
   sendAndConfirmTransaction,
+  ComputeBudgetProgram,
 } from '@solana/web3.js';
 
 export const main = async () => {
@@ -35,17 +36,31 @@ export const main = async () => {
   );
 
   // ------------------------------------------
+  //  Transferring Settings
+  // ------------------------------------------
+  const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+    units: 300,
+  });
+
+  const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+    microLamports: 60_000
+  });
+
+  // ------------------------------------------
   //  Transfer
   // ------------------------------------------
   let transaction = new Transaction();
 
-  transaction.add(
-    SystemProgram.transfer({
-      fromPubkey: payer.publicKey,
-      toPubkey: takerPublicKey,
-      lamports: LAMPORTS_PER_SOL * 0.00001,
-    })
-  );
+  transaction
+    .add(modifyComputeUnits)
+    .add(addPriorityFee)
+    .add(
+      SystemProgram.transfer({
+        fromPubkey: payer.publicKey,
+        toPubkey: takerPublicKey,
+        lamports: LAMPORTS_PER_SOL * 0.00001,
+      })
+    );
 
   const signature = await sendAndConfirmTransaction(
     connection,
@@ -54,7 +69,7 @@ export const main = async () => {
     // https://solana-labs.github.io/solana-web3.js/types/ConfirmOptions.html
     {
       commitment: 'confirmed',
-      maxRetries: 3,
+      maxRetries: 0,
       preflightCommitment: 'confirmed',
       skipPreflight: true,
     }
