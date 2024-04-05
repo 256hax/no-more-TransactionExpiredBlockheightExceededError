@@ -10,12 +10,11 @@ import {
   SystemProgram,
   Transaction,
   LAMPORTS_PER_SOL,
-  sendAndConfirmTransaction,
 } from '@solana/web3.js';
 
-// Mad Mints
-import { createNonceAccount } from 'mad-mints-packages';
-import { getNonceAccount } from 'mad-mints-packages';
+// Modules
+import { createNonceAccount } from './modules/createNonceAccount';
+import { getNonceAccount } from './modules/getNonceAccount';
 
 const main = async () => {
   // ----------------------------------------------------
