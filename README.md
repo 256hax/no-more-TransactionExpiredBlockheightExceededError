@@ -1,17 +1,23 @@
-# CLI cNFT
-## Address(Mainnet)
-Merkle Tree: ``
+# No more TransactionExpiredBlockheightExceededError
+```
+TransactionExpiredBlockheightExceededError: Signature ... has expired: block height exceeded.
+```
 
 ## Setup
+```
+npm i
+```
 ```
 cp .env.example .env
 ```
 
 ## Run
-Update values(e.g. merkle tree) at each files then,
+```
+ts-node src/transferSol.ts
+```
 
 ```
-ts-node src/1_createMerkleTree.ts
-ts-node src/2_mintToCollection.ts
-ts-node src/3_fetchMerkleTreeForCnft.ts.ts
+ts-node src/transferSolUsingDurableNonce.ts
 ```
+
+## Reference
